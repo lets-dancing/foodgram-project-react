@@ -159,7 +159,7 @@ class FavoriteRecipe(models.Model):
             f'{[i.name for i in self.recipe.all()]}')
 
     @receiver(post_save, sender=User)
-    def create_empty_favorite_recipe(self, sender, instance, created, **kwargs):
+    def create_empty_favorite_recipe(self, sender, instance, created):
         if created:
             FavoriteRecipe.objects.create(user=instance)
 
@@ -185,6 +185,6 @@ class ShoppingCart(models.Model):
             f'{[i.name for i in self.recipe.all()]}')
 
     @receiver(post_save, sender=User)
-    def create_empty_shopping_cart(self, sender, instance, created, **kwargs):
+    def create_empty_shopping_cart(self, sender, instance, created):
         if created:
             ShoppingCart.objects.create(user=instance)

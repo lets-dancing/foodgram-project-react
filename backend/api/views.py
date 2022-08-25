@@ -73,6 +73,7 @@ def about_me(request):
         serializer.data,
         status=status.HTTP_200_OK)
 
+
 @api_view(['POST'])
 def set_password(request):
     '''Изменение пароля текущего пользователя.'''
