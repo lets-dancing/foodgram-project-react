@@ -9,7 +9,6 @@ from rest_framework import generics, status, viewsets
 from rest_framework.authtoken.models import Token
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.decorators import api_view
-from rest_framework.mixins import CreateModelMixin
 from rest_framework.permissions import (AllowAny, IsAuthenticated,
                                         IsAuthenticatedOrReadOnly)
 from rest_framework.response import Response
@@ -25,8 +24,6 @@ from .serializers import (IngredientSerializer, RecipeSerializer,
 User = get_user_model()
 
 
-# ! USERS ------------------------------------
-# ! READY
 class RegisterAndUserList(generics.ListCreateAPIView):
     '''Регистрация (POST) и список пользователей (GET).'''
     permission_classes = (AllowAny,)
@@ -52,7 +49,6 @@ class RegisterAndUserList(generics.ListCreateAPIView):
         return UserListSerializer
 
 
-# ! READY
 class UserDetail(generics.RetrieveAPIView):
     '''Профиль пользователя.'''
     serializer_class = UserListSerializer
@@ -69,7 +65,6 @@ class UserDetail(generics.RetrieveAPIView):
             else User.objects.annotate(is_subscribed=Value(False)))
 
 
-# ! READY
 @api_view(['GET'])
 def about_me(request):
     '''Информация о текущем пользователе.'''
@@ -78,8 +73,6 @@ def about_me(request):
         serializer.data,
         status=status.HTTP_200_OK)
 
-
-# ! READY
 @api_view(['POST'])
 def set_password(request):
     '''Изменение пароля текущего пользователя.'''
@@ -91,7 +84,6 @@ def set_password(request):
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-# ! READY
 class AuthToken(ObtainAuthToken):
     '''Получить токен авторизации.'''
     serializer_class = TokenSerializer
@@ -106,17 +98,13 @@ class AuthToken(ObtainAuthToken):
             {'auth_token': token.key}, status=status.HTTP_201_CREATED)
 
 
-# ! READY
 @api_view(['POST'])
 def logout(request):
     '''Удаляет токен текущего пользователя.'''
     get_object_or_404(Token, user=request.user).delete()
     return Response(status=status.HTTP_204_NO_CONTENT)
-# ! USERS ------------------------------------
 
 
-# ! TAGS ------------------------------------
-# ! READY
 class TagList(generics.ListAPIView):
     '''Cписок тегов.'''
     queryset = Tag.objects.all()
@@ -125,17 +113,13 @@ class TagList(generics.ListAPIView):
     pagination_class = None
 
 
-# ! READY
 class TagDetail(generics.RetrieveAPIView):
     '''Получение деталей тега.'''
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
     permission_classes = (AllowAny,)
-# ! TAGS ------------------------------------
 
 
-# ! RECIPE ----------------------------------
-# ! READY
 class RecipeList(generics.ListCreateAPIView):
     '''
     Список рецептов (GET). Страница доступна всем пользователям.
@@ -176,7 +160,6 @@ class RecipeList(generics.ListCreateAPIView):
         serializer.save(author=self.request.user)
 
 
-# ! READY
 class GetUpdateDeleteRecipe(generics.RetrieveUpdateDestroyAPIView):
     '''
     Получение рецепта (GET)
@@ -213,7 +196,6 @@ class GetUpdateDeleteRecipe(generics.RetrieveUpdateDestroyAPIView):
         )
 
 
-# ! READY
 class FavoriteRecipeDetail(generics.RetrieveDestroyAPIView):
     '''Избранный рецепт.'''
     serializer_class = SubscribeRecipeSerializer
@@ -234,7 +216,6 @@ class FavoriteRecipeDetail(generics.RetrieveDestroyAPIView):
         self.request.user.favorite_recipe.recipe.remove(instance)
 
 
-# ! READY
 class IngredientDetail(generics.RetrieveAPIView):
     '''Получение ингредиента.'''
     queryset = Ingredient.objects.all()
@@ -242,7 +223,6 @@ class IngredientDetail(generics.RetrieveAPIView):
     permission_classes = (AllowAny,)
 
 
-# ! READY
 class IngredientList(generics.ListAPIView):
     '''Список ингридиентов.'''
     queryset = Ingredient.objects.all()
@@ -252,8 +232,6 @@ class IngredientList(generics.ListAPIView):
     pagination_class = None
 
 
-# * Разобраться с методом POST
-# ! NOTREADY
 class ShoppingCartDetail(viewsets.ModelViewSet):
     '''Список покупок.'''
     serializer_class = SubscribeRecipeSerializer
@@ -277,8 +255,6 @@ class ShoppingCartDetail(viewsets.ModelViewSet):
         self.request.user.shopping_cart.recipe.remove(instance)
 
 
-# * Разобраться с методом POST
-# ! NOTREADY
 class SubscribeDetail(viewsets.ModelViewSet):
     '''Подписка на пользователя.'''
     serializer_class = SubscribeSerializer
