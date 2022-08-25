@@ -63,7 +63,7 @@ jobs:
           script: |
             sudo docker pull forpracticum/foodgram_backend:latest
             sudo docker pull forpracticum/foodgram_frontend:latest
-            cd infra/
+            cd /foodgram-project-react/infra
             sudo docker-compose stop
             sudo docker-compose rm backend
       - name: docker-compose up
