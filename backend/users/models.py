@@ -9,12 +9,6 @@ class User (AbstractUser):
         unique=True,
         verbose_name='Адрес электронной почты'
     )
-    username = models.CharField(
-        max_length=150,
-        unique=True,
-        db_index=True,
-        verbose_name='Уникальный юзернейм',
-    )
     first_name = models.CharField(
         max_length=150,
         verbose_name='Имя'
@@ -23,10 +17,9 @@ class User (AbstractUser):
         max_length=150,
         verbose_name='Фамилия'
     )
-    password = models.CharField(
-        max_length=150,
-        verbose_name='Пароль'
-    )
+
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = ['username', 'first_name', 'last_name']
 
     class Meta:
         ordering = ('id',)
