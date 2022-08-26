@@ -4,15 +4,6 @@ from django_filters.fields import MultipleChoiceField
 from recipes.models import Ingredient, Recipe
 
 
-class IngredientFilter(filters.FilterSet):
-    name = filters.CharFilter(
-        lookup_expr='istartswith')
-
-    class Meta:
-        model = Ingredient
-        fields = ('name',)
-
-
 class TagsMultipleChoiceField(MultipleChoiceField):
     def validate(self, value):
         if self.required and not value:
@@ -27,21 +18,28 @@ class TagsMultipleChoiceField(MultipleChoiceField):
                     params={'value': val},)
 
 
+class IngredientFilter(filters.FilterSet):
+    name = filters.CharFilter(lookup_expr='istartswith')
+
+    class Meta:
+        model = Ingredient
+        fields = ('name',)
+
+
 class TagsFilter(filters.AllValuesMultipleFilter):
     field_class = TagsMultipleChoiceField
 
 
-# ! READY
 class RecipeFilter(filters.FilterSet):
     is_favorited = filters.BooleanFilter(
         field_name='is_favorited',
-        label='В избранном',)
+        label='Избранное',)
     is_in_shopping_cart = filters.BooleanFilter(
         field_name='is_in_shopping_cart',
-        label='В корзине',)
+        label='Корзина',)
     tags = TagsFilter(
         field_name='tags__slug',
-        label='Слаг тэга',)
+        label='Ссылка',)
 
     class Meta:
         model = Recipe
