@@ -8,9 +8,9 @@ services:
     env_file:
       - ./.env
 
-  backend:
+  web:
     build: ../backend/
-    container_name: foodgram_backend
+    container_name: web
     restart: always
     volumes:
       - static_value:/app/static/
@@ -26,7 +26,7 @@ services:
     volumes:
       - ../frontend/:/app/result_build/
     depends_on:
-      - backend
+      - web
 
   nginx:
     image: nginx:1.19.3
@@ -39,7 +39,7 @@ services:
       - static_value:/var/html/static/
       - media_value:/var/html/media/
     depends_on:
-      - backend
+      - web
       - frontend
 
 volumes:
