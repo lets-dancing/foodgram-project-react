@@ -20,7 +20,7 @@ class Recipe(models.Model):
         'Изображение рецепта',
         upload_to='recipes/')
     text = models.TextField('Описание рецепта')
-    cooking_time = models.BigIntegerField('Время приготовления')
+    cooking_time = models.PositiveIntegerField('Время приготовления')
     ingredients = models.ManyToManyField(
         'Ingredient',
         through='RecipeIngredient')
@@ -30,6 +30,11 @@ class Recipe(models.Model):
     pub_date = models.DateTimeField(
         'Дата публикации',
         auto_now_add=True,)
+    slug = models.SlugField(
+        max_length=50,
+        unique=True, null=True,
+        verbose_name='slug рецепта'
+    )
 
     class Meta:
         ordering = ['-pub_date']
@@ -37,7 +42,7 @@ class Recipe(models.Model):
         verbose_name_plural = 'Рецепты'
 
     def __str__(self) -> str:
-        return f'{self.author.email}, {self.name}'
+        return f'{self.author.email}, {self.name}, slug {self.slug}'
 
 
 class RecipeIngredient(models.Model):
@@ -125,12 +130,17 @@ class Subscribe(models.Model):
         auto_now_add=True)
 
     class Meta:
+        ordering = ['follower']
         verbose_name = 'Подписка'
         verbose_name_plural = 'Подписки'
         constraints = [
             models.UniqueConstraint(
                 fields=['follower', 'following'],
-                name='unique subs')
+                name='unique subs'),
+            models.CheckConstraint(
+                check=~models.Q(follower=models.F('following')),
+                name='запрет подписки на самого себя',
+            ),
         ]
 
     def __str__(self):

@@ -13,6 +13,8 @@ class RecipeTagAdmin(admin.StackedInline):
 class RecipeIngredientAdmin(admin.StackedInline):
     model = RecipeIngredient
     autocomplete_fields = ('ingredient',)
+    extra = 1
+    min_num = 1
 
 
 @admin.register(Recipe)

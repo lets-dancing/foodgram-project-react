@@ -201,13 +201,15 @@ class RecipesViewSet(
         page = canvas.Canvas(buffer)
         pdfmetrics.registerFont(TTFont('Vera', 'Vera.ttf'))
         x_position, y_position = 50, 800
+        page_count_before = 14
+        page_count_after = 24
         shopping_cart = (
             request.user.shopping_cart.recipe.
             values(
                 'ingredients__name',
                 'ingredients__measurement_unit'
             ).annotate(amount=Sum('recipe__amount')).order_by())
-        page.setFont('Vera', 14)
+        page.setFont('Vera', page_count_before)
         if shopping_cart:
             indent = 20
             page.drawString(x_position, y_position, 'Cписок покупок:')
@@ -215,17 +217,19 @@ class RecipesViewSet(
                 page.drawString(
                     x_position, y_position - indent,
                     f'{index}. {recipe["ingredients__name"]} - '
+                    # здесь не нашел способа привести к одному типу кавычек
                     f'{recipe["amount"]} '
                     f'{recipe["ingredients__measurement_unit"]}.')
                 y_position -= 15
-                if y_position <= 50:
+                position_limit = 50
+                if y_position <= position_limit:
                     page.showPage()
                     y_position = 800
             page.save()
             buffer.seek(0)
             return FileResponse(
                 buffer, as_attachment=True, filename=FILENAME)
-        page.setFont('Vera', 24)
+        page.setFont('Vera', page_count_after)
         page.drawString(
             x_position,
             y_position,
