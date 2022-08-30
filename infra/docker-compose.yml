@@ -9,20 +9,19 @@ services:
       - ./.env
 
   web:
-    build: ../backend/
-    container_name: web
+    image: forpracticum/foodgram_backend:latest
     restart: always
     volumes:
-      - static_value:/app/static/
-      - media_value:/app/media/
+      - data_value:/code/data/
+      - static_value:/code/static/
+      - media_value:/code/media/
     depends_on:
       - db
     env_file:
       - ./.env
 
   frontend:
-    build: ../frontend/
-    container_name: foodgram_frontend
+    image: forpracticum/foodgram_frontend:latest
     volumes:
       - ../frontend/:/app/result_build/
     depends_on:
