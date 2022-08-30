@@ -217,7 +217,6 @@ class RecipesViewSet(
                 page.drawString(
                     x_position, y_position - indent,
                     f'{index}. {recipe["ingredients__name"]} - '
-                    # здесь не нашел способа привести к одному типу кавычек
                     f'{recipe["amount"]} '
                     f'{recipe["ingredients__measurement_unit"]}.')
                 y_position -= 15
