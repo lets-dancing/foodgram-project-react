@@ -1,6 +1,5 @@
 import csv
 
-from django.conf import settings
 from django.core.management import BaseCommand
 from recipes.models import Ingredient, Tag
 
@@ -9,10 +8,9 @@ class Command(BaseCommand):
     help = 'Загрузка из csv файла'
 
     def handle(self, *args, **kwargs):
-        data_path = settings.BASE_DIR
         print('Обработка файла ingredients.csv')
         with open(
-            f'{data_path}\\data\\ingredients.csv',
+            './recipes/data/ingredients.csv',
             'r',
             encoding='utf-8'
         ) as file:
@@ -23,7 +21,7 @@ class Command(BaseCommand):
 
         print('Обработка файла tags.csv')
         with open(
-            f'{data_path}\\data\\tags.csv',
+            './recipes/data/tags.csv',
             'r',
             encoding='utf-8'
         ) as file:

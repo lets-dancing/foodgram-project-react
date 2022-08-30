@@ -11,7 +11,6 @@ SECRET_KEY = os.environ.get('SECRET_KEY', default='your_secret_key')
 DEBUG = True
 
 ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', default='localhost').split()
-#ALLOWED_HOSTS = ['*', 'backend', '158.160.8.104', 'localhost', '127.0.0.1']
 
 AUTH_USER_MODEL = 'users.User'
 
