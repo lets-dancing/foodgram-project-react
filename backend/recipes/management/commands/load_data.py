@@ -22,7 +22,7 @@ class Command(BaseCommand):
         print('Загрузка тэгов')
         data = [
             {'name': 'Завтрак', 'color': '#E26C2D', 'slug': 'breakfast'},
-            {'name': 'Обед', 'color': '#49B64E', 'slug': 'dinner'},
-            {'name': 'Ужин', 'color': '#8775D2', 'slug': 'supper'}]
+            {'name': 'Обед', 'color': '#49B64E', 'slug': 'lunch'},
+            {'name': 'Ужин', 'color': '#8775D2', 'slug': 'dinner'}]
         Tag.objects.bulk_create(Tag(**tag) for tag in data)
         self.stdout.write(self.style.SUCCESS('Все тэги загружены!'))
