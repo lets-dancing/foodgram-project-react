@@ -1,8 +1,8 @@
 from django.contrib.auth import get_user_model
+from django.core import validators
 from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-from django.utils.translation import gettext_lazy as _
 
 User = get_user_model()
 
@@ -18,7 +18,9 @@ class Recipe(models.Model):
         max_length=255)
     image = models.ImageField(
         'Изображение рецепта',
-        upload_to='recipes/')
+        upload_to='recipes/',
+        blank=True,
+        null=True)
     text = models.TextField('Описание рецепта')
     cooking_time = models.PositiveIntegerField('Время приготовления')
     ingredients = models.ManyToManyField(
@@ -54,12 +56,17 @@ class RecipeIngredient(models.Model):
         'Ingredient',
         on_delete=models.CASCADE,
         related_name='ingredient')
-    amount = models.BigIntegerField(
-        _('Amount of ingredient'),)
+    amount = models.PositiveSmallIntegerField(
+        default=1,
+        validators=(
+            validators.MinValueValidator(
+                1, message='Мин. количество ингридиентов 1'),),
+        verbose_name='Количество',)
 
     class Meta:
         verbose_name = 'Количество ингредиента'
         verbose_name_plural = 'Количество ингредиентов'
+        ordering = ['-id']
         constraints = [
             models.UniqueConstraint(
                 fields=['recipe', 'ingredient'],
@@ -82,7 +89,7 @@ class Tag(models.Model):
         max_length=200,
         unique=True)
     color = models.CharField(
-        'Hexcolor тега',
+        'Цвет тега',
         max_length=7,
         unique=True)
     slug = models.SlugField(
@@ -151,6 +158,7 @@ class FavoriteRecipe(models.Model):
     user = models.OneToOneField(
         User,
         on_delete=models.CASCADE,
+        null=True,
         related_name='favorite_recipe',
         verbose_name='Пользователь')
     recipe = models.ManyToManyField(
@@ -164,9 +172,8 @@ class FavoriteRecipe(models.Model):
         verbose_name_plural = 'Избранные рецепты'
 
     def __str__(self):
-        return (
-            f'{self.user}, '
-            f'{[i.name for i in self.recipe.all()]}')
+        list_ = [item['name'] for item in self.recipe.values('name')]
+        return f'Пользователь {self.user} добавил {list_} в избранные.'
 
     @receiver(post_save, sender=User)
     def create_empty_favorite_recipe(
@@ -180,22 +187,24 @@ class ShoppingCart(models.Model):
         User,
         on_delete=models.CASCADE,
         related_name='shopping_cart',
+        null=True,
         verbose_name='Пользователь')
     recipe = models.ManyToManyField(
         Recipe,
         related_name='shopping_cart',
-        verbose_name='Рецепт в корзине покупок')
+        verbose_name='Покупка')
 
     class Meta:
-        verbose_name = 'Корзина с рецептом'
-        verbose_name_plural = 'Корзина с рецептами'
+        verbose_name = 'Покупка'
+        verbose_name_plural = 'Покупки'
+        ordering = ['-id']
 
-    def __str__(self) -> str:
-        return (
-            f'{self.user}, '
-            f'{[i.name for i in self.recipe.all()]}')
+    def __str__(self):
+        list_ = [item['name'] for item in self.recipe.values('name')]
+        return f'Пользователь {self.user} добавил {list_} в покупки.'
 
     @receiver(post_save, sender=User)
-    def create_empty_shopping_cart(sender, instance, created, **kwargs):
+    def create_shopping_cart(
+            sender, instance, created, **kwargs):
         if created:
-            ShoppingCart.objects.create(user=instance)
+            return ShoppingCart.objects.create(user=instance)
