@@ -12,7 +12,7 @@ services:
     image: forpracticum/foodgram_backend:latest
     restart: always
     volumes:
-      - ./data:/code/recipes/data
+      - ./data:/app/recipes/data
       - static_value:/code/static/
       - media_value:/code/media/
     depends_on:
