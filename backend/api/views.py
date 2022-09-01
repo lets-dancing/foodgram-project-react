@@ -30,6 +30,26 @@ User = get_user_model()
 FILENAME = 'shoppingcart.pdf'
 
 
+class GetObjectMixin:
+    """Миксина для удаления/добавления рецептов избранных/корзины."""
+
+    serializer_class = SubscribeRecipeSerializer
+    permission_classes = (AllowAny,)
+
+    def get_object(self):
+        recipe_id = self.kwargs['recipe_id']
+        recipe = get_object_or_404(Recipe, id=recipe_id)
+        self.check_object_permissions(self.request, recipe)
+        return recipe
+
+
+class PermissionAndPaginationMixin:
+    """Миксина для списка тегов и ингридиентов."""
+
+    permission_classes = (IsAdminOrReadOnly,)
+    pagination_class = None
+
+
 class AddAndDeleteSubscribe(
         generics.RetrieveDestroyAPIView,
         generics.ListCreateAPIView):
@@ -97,15 +117,6 @@ class AddDeleteShoppingCart(
         generics.RetrieveDestroyAPIView,
         generics.ListCreateAPIView):
     """Добавление и удаление рецепта в/из корзины."""
-
-    serializer_class = SubscribeRecipeSerializer
-    permission_classes = (AllowAny,)
-
-    def get_object(self):
-        recipe_id = self.kwargs['recipe_id']
-        recipe = get_object_or_404(Recipe, id=recipe_id)
-        self.check_object_permissions(self.request, recipe)
-        return recipe
 
     def create(self, request, *args, **kwargs):
         instance = self.get_object()
