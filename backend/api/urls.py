@@ -2,7 +2,7 @@ from django.urls import include, path
 from rest_framework.routers import DefaultRouter
 
 from api.views import (AddAndDeleteSubscribe, AddDeleteFavoriteRecipe,
-                       AddDeleteShoppingCart, IngredientsViewSet,
+                       AddDeleteShoppingCart, AuthToken, IngredientsViewSet,
                        RecipesViewSet, TagsViewSet, UsersViewSet, set_password)
 
 app_name = 'api'
@@ -15,6 +15,10 @@ router.register('recipes', RecipesViewSet)
 
 
 urlpatterns = [
+     path(
+          'auth/token/login/',
+          AuthToken.as_view(),
+          name='login'),
      path(
           'users/set_password/',
           set_password,
