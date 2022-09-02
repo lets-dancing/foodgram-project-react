@@ -135,7 +135,7 @@ class RecipeIngredientSerializer(serializers.ModelSerializer):
             'id', 'name', 'measurement_unit', 'amount')
 
 
-class RecipeUserSerializer(serializers.ModelSerializer):
+class RecipeUserSerializer(GetIsSubscribedMixin, serializers.ModelSerializer):
     is_subscribed = serializers.SerializerMethodField(
         read_only=True)
 
@@ -156,26 +156,22 @@ class IngredientsEditSerializer(serializers.ModelSerializer):
         fields = ('id', 'amount')
 
 
-class RecipeSerializer(serializers.ModelSerializer):
-    image = Base64ImageField()
+class RecipeWriteSerializer(serializers.ModelSerializer):
+    image = Base64ImageField(
+        max_length=None,
+        use_url=True)
     tags = TagSerializer(
         many=True,
-        read_only=True)
-    author = RecipeUserSerializer(
-        read_only=True,
-        default=serializers.CurrentUserDefault())
+        queryset=Tag.objects.all())
     ingredients = RecipeIngredientSerializer(
         many=True,
         required=True,
         source='recipe')
-    is_favorited = serializers.BooleanField(
-        read_only=True)
-    is_in_shopping_cart = serializers.BooleanField(
-        read_only=True)
 
     class Meta:
         model = Recipe
         fields = '__all__'
+        read_only_fields = ('author',)
 
     def validate(self, data):
         ingredients = self.initial_data.get('ingredients')
@@ -235,18 +231,15 @@ class RecipeSerializer(serializers.ModelSerializer):
         return recipe
 
     def update(self, instance, validated_data):
-        validated_data.pop('recipe')
-        tags = self.initial_data.pop('tags')
-        ingredients = self.initial_data.pop('ingredients')
-        if tags:
-            instance.tags.set(tags)
-        if ingredients:
+        if 'ingredients' in validated_data:
+            ingredients = validated_data.pop('ingredients')
             instance.ingredients.clear()
             self.create_ingredients(ingredients, instance)
-        for key, value in validated_data.items():
-            setattr(instance, key, value)
-        instance.save()
-        return instance
+        if 'tags' in validated_data:
+            instance.tags.set(
+                validated_data.pop('tags'))
+        return super().update(
+            instance, validated_data)
 
     def to_representation(self, instance):
         return RecipeReadSerializer(
