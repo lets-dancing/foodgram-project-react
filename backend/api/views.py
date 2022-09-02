@@ -23,7 +23,7 @@ from rest_framework.response import Response
 from api.filters import IngredientFilter, RecipeFilter
 from api.permissions import IsAdminOrReadOnly
 
-from .serializers import (IngredientSerializer, RecipeSerializer,
+from .serializers import (IngredientSerializer, RecipeWriteSerializer,
                           SubscribeRecipeSerializer, SubscribeSerializer,
                           TagSerializer, TokenSerializer, UserCreateSerializer,
                           UserListSerializer, UserPasswordSerializer)
@@ -197,7 +197,7 @@ class RecipesViewSet(
 
     def get_serializer_class(self):
         if self.request.method == 'GET':
-            return RecipeSerializer
+            return RecipeWriteSerializer
         return SubscribeRecipeSerializer
 
     def get_queryset(self):
