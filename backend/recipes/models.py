@@ -7,6 +7,46 @@ from django.dispatch import receiver
 User = get_user_model()
 
 
+class Ingredient(models.Model):
+    name = models.CharField(
+        'Название ингредиента',
+        max_length=200)
+    measurement_unit = models.CharField(
+        'Единица измерения ингредиента',
+        max_length=200)
+
+    class Meta:
+        ordering = ['name']
+        verbose_name = 'Ингредиент'
+        verbose_name_plural = 'Ингредиенты'
+
+    def __str__(self):
+        return f'{self.name}, {self.measurement_unit}.'
+
+
+class Tag(models.Model):
+    name = models.CharField(
+        'Имя',
+        max_length=60,
+        unique=True)
+    color = models.CharField(
+        'Цвет',
+        max_length=7,
+        unique=True)
+    slug = models.SlugField(
+        'Ссылка',
+        max_length=100,
+        unique=True)
+
+    class Meta:
+        verbose_name = 'Тэг'
+        verbose_name_plural = 'Тэги'
+        ordering = ['-id']
+
+    def __str__(self):
+        return self.name
+
+
 class Recipe(models.Model):
     author = models.ForeignKey(
         User,
@@ -18,17 +58,18 @@ class Recipe(models.Model):
         max_length=255)
     image = models.ImageField(
         'Изображение рецепта',
-        upload_to='recipes/',
+        upload_to='static/recipe/',
         blank=True,
         null=True)
     text = models.TextField('Описание рецепта')
-    cooking_time = models.PositiveIntegerField('Время приготовления')
+    cooking_time = models.BigIntegerField('Время приготовления')
     ingredients = models.ManyToManyField(
-        'Ingredient',
+        Ingredient,
         through='RecipeIngredient')
     tags = models.ManyToManyField(
-        'Tag',
-        through='RecipeTag')
+        Tag,
+        verbose_name='Тэги',
+        related_name='recipes')
     pub_date = models.DateTimeField(
         'Дата публикации',
         auto_now_add=True,)
@@ -74,60 +115,13 @@ class RecipeIngredient(models.Model):
         ]
 
 
-class RecipeTag(models.Model):
-    recipe = models.ForeignKey(
-        'Recipe',
-        on_delete=models.CASCADE)
-    tag = models.ForeignKey(
-        'Tag',
-        on_delete=models.CASCADE)
-
-
-class Tag(models.Model):
-    name = models.CharField(
-        'Имя тега',
-        max_length=200,
-        unique=True)
-    color = models.CharField(
-        'Цвет тега',
-        max_length=7,
-        unique=True)
-    slug = models.SlugField(
-        'Слаг тега',
-        max_length=200,
-        unique=True)
-
-    class Meta:
-        verbose_name = 'Тэг'
-        verbose_name_plural = 'Тэги'
-
-    def __str__(self):
-        return f'{self.name}, {self.slug}'
-
-
-class Ingredient(models.Model):
-    name = models.CharField(
-        'Название ингредиента',
-        max_length=200)
-    measurement_unit = models.CharField(
-        'Единица измерения ингредиента',
-        max_length=200)
-
-    class Meta:
-        verbose_name = 'Ингредиент'
-        verbose_name_plural = 'Ингредиенты'
-
-    def __str__(self):
-        return f'{self.name}, {self.measurement_unit}'
-
-
 class Subscribe(models.Model):
-    follower = models.ForeignKey(
+    user = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
         related_name='follower',
         verbose_name='Подписчик')
-    following = models.ForeignKey(
+    author = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
         related_name='following',
@@ -137,15 +131,15 @@ class Subscribe(models.Model):
         auto_now_add=True)
 
     class Meta:
-        ordering = ['follower']
+        ordering = ['user']
         verbose_name = 'Подписка'
         verbose_name_plural = 'Подписки'
         constraints = [
             models.UniqueConstraint(
-                fields=['follower', 'following'],
+                fields=['user', 'author'],
                 name='unique subs'),
             models.CheckConstraint(
-                check=~models.Q(follower=models.F('following')),
+                check=~models.Q(user=models.F('author')),
                 name='запрет подписки на самого себя',
             ),
         ]

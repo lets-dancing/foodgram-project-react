@@ -65,8 +65,8 @@ class IngredientAdmin(admin.ModelAdmin):
 @admin.register(Subscribe)
 class SubscribeAdmin(admin.ModelAdmin):
 
-    list_display = ('id', 'follower', 'following', 'created',)
-    search_fields = ('follower__email', 'following__email',)
+    list_display = ('id', 'user', 'author', 'created',)
+    search_fields = ('user__email', 'author__email',)
     empty_value_display = '-пусто-'
 
 
