@@ -16,7 +16,8 @@ from rest_framework import generics, status, viewsets
 from rest_framework.authtoken.models import Token
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.decorators import action, api_view
-from rest_framework.permissions import (AllowAny, IsAuthenticated,
+from rest_framework.permissions import (SAFE_METHODS, AllowAny,
+                                        IsAuthenticated,
                                         IsAuthenticatedOrReadOnly)
 from rest_framework.response import Response
 
@@ -93,17 +94,10 @@ class AddAndDeleteSubscribe(
 
 
 class AddDeleteFavoriteRecipe(
+        GetObjectMixin,
         generics.RetrieveDestroyAPIView,
         generics.ListCreateAPIView):
     """Добавление и удаление рецепта в/из избранных."""
-
-    serializer_class = SubscribeRecipeSerializer
-
-    def get_object(self):
-        recipe_id = self.kwargs['recipe_id']
-        recipe = get_object_or_404(Recipe, id=recipe_id)
-        self.check_object_permissions(self.request, recipe)
-        return recipe
 
     def create(self, request, *args, **kwargs):
         instance = self.get_object()
@@ -116,6 +110,7 @@ class AddDeleteFavoriteRecipe(
 
 
 class AddDeleteShoppingCart(
+        GetObjectMixin,
         generics.RetrieveDestroyAPIView,
         generics.ListCreateAPIView):
     """Добавление и удаление рецепта в/из корзины."""
@@ -168,11 +163,12 @@ class UsersViewSet(UserViewSet):
         return UserListSerializer
 
     def perform_create(self, serializer):
-        password = make_password(
-            self.request.data['password'])
+        password = make_password(self.request.data['password'])
         serializer.save(password=password)
 
-    @action(detail=False, permission_classes=(IsAuthenticated,))
+    @action(
+        detail=False,
+        permission_classes=(IsAuthenticated,))
     def subscriptions(self, request):
         """Получить на кого пользователь подписан."""
 
@@ -185,18 +181,15 @@ class UsersViewSet(UserViewSet):
         return self.get_paginated_response(serializer.data)
 
 
-class RecipesViewSet(
-        generics.ListCreateAPIView,
-        viewsets.GenericViewSet):
+class RecipesViewSet(viewsets.ModelViewSet):
     """Рецепты."""
 
     queryset = Recipe.objects.all()
-    serializer_class = SubscribeRecipeSerializer
     filterset_class = RecipeFilter
     permission_classes = (IsAuthenticatedOrReadOnly,)
 
     def get_serializer_class(self):
-        if self.request.method == 'GET':
+        if self.request.method in SAFE_METHODS:
             return RecipeWriteSerializer
         return SubscribeRecipeSerializer
 
@@ -218,6 +211,9 @@ class RecipesViewSet(
         ).select_related('author').prefetch_related(
             'tags', 'ingredients', 'recipe',
             'shopping_cart', 'favorite_recipe')
+
+    def perform_create(self, serializer):
+        serializer.save(author=self.request.user)
 
     @action(
         detail=False,
@@ -267,14 +263,18 @@ class RecipesViewSet(
         return FileResponse(buffer, as_attachment=True, filename=FILENAME)
 
 
-class TagsViewSet(viewsets.ModelViewSet):
+class TagsViewSet(
+        PermissionAndPaginationMixin,
+        viewsets.ModelViewSet):
     """Список тэгов."""
 
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
 
 
-class IngredientsViewSet(viewsets.ModelViewSet):
+class IngredientsViewSet(
+        PermissionAndPaginationMixin,
+        viewsets.ModelViewSet):
     """Список ингредиентов."""
 
     queryset = Ingredient.objects.all()
