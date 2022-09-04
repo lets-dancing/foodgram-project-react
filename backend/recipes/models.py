@@ -57,8 +57,8 @@ class Recipe(models.Model):
         'Рецепт',
         max_length=255)
     image = models.ImageField(
-        'Изображение рецепта',
-        upload_to='static/recipe/',
+        'Изображение блюда',
+        upload_to='recipes/',
         blank=True,
         null=True)
     text = models.TextField('Описание рецепта')
@@ -90,11 +90,11 @@ class Recipe(models.Model):
 
 class RecipeIngredient(models.Model):
     recipe = models.ForeignKey(
-        'Recipe',
+        Recipe,
         on_delete=models.CASCADE,
         related_name='recipe')
     ingredient = models.ForeignKey(
-        'Ingredient',
+        Ingredient,
         on_delete=models.CASCADE,
         related_name='ingredient')
     amount = models.PositiveSmallIntegerField(
@@ -145,7 +145,7 @@ class Subscribe(models.Model):
         ]
 
     def __str__(self):
-        return f'follower: {self.follower} - following: {self.following}'
+        return f'Пользователь: {self.user} - автор: {self.author}'
 
 
 class FavoriteRecipe(models.Model):

@@ -7,6 +7,7 @@ from django.db.models.expressions import Exists, OuterRef, Value
 from django.http import FileResponse
 from django.shortcuts import get_object_or_404
 from djoser.views import UserViewSet
+from .pagination import LimitPageNumberPagination
 from recipes.models import (FavoriteRecipe, Ingredient, Recipe, ShoppingCart,
                             Subscribe, Tag)
 from reportlab.pdfbase import pdfmetrics
@@ -34,7 +35,7 @@ FILENAME = 'shoppingcart.pdf'
 
 
 class GetObjectMixin:
-    """Миксина для удаления/добавления рецептов избранных/корзины."""
+    """Миксин для удаления/добавления рецептов избранных/корзины."""
 
     serializer_class = SubscribeRecipeSerializer
     permission_classes = (AllowAny,)
@@ -146,6 +147,7 @@ class UsersViewSet(UserViewSet):
 
     serializer_class = UserListSerializer
     permission_classes = (AllowAny,)
+    pagination_class = LimitPageNumberPagination
 
     def get_queryset(self):
         return User.objects.annotate(
@@ -187,6 +189,7 @@ class RecipesViewSet(viewsets.ModelViewSet):
     queryset = Recipe.objects.all()
     filterset_class = RecipeFilter
     permission_classes = (IsAuthenticatedOrReadOnly,)
+    pagination_class = LimitPageNumberPagination
 
     def get_serializer_class(self):
         if self.request.method in SAFE_METHODS:

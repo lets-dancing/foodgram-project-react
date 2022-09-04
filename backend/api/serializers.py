@@ -1,6 +1,7 @@
 import django.contrib.auth.password_validation as validators
 from django.contrib.auth import authenticate, get_user_model
 from django.contrib.auth.hashers import make_password
+from django.db.models import F
 from django.shortcuts import get_object_or_404
 from drf_base64.fields import Base64ImageField
 from recipes.models import Ingredient, Recipe, RecipeIngredient, Subscribe, Tag
@@ -156,8 +157,18 @@ class IngredientsEditSerializer(serializers.ModelSerializer):
         fields = ('id', 'amount')
 
 
-class RecipeWriteSerializer(serializers.ModelSerializer):
+class GetIngredientsMixin:
+
+    def get_ingredients(self, obj):
+        return obj.ingredients.values(
+            'id', 'name', 'measurement_unit',
+            amount=F('ingredients_amount__amount')
+        )
+
+
+class RecipeWriteSerializer(GetIngredientsMixin, serializers.ModelSerializer):
     image = Base64ImageField(
+        source='image',
         max_length=None,
         use_url=True)
     tags = serializers.PrimaryKeyRelatedField(
@@ -247,8 +258,8 @@ class RecipeWriteSerializer(serializers.ModelSerializer):
             }).data
 
 
-class RecipeReadSerializer(serializers.ModelSerializer):
-    image = Base64ImageField()
+class RecipeReadSerializer(GetIngredientsMixin, serializers.ModelSerializer):
+    image = Base64ImageField(max_length=None, use_url=True, source='image')
     tags = TagSerializer(
         many=True,
         read_only=True)
