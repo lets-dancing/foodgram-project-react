@@ -12,7 +12,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', default='localhost').split()
 
-AUTH_USER_MODEL = 'users.User'
+# AUTH_USER_MODEL = 'users.User'
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -21,13 +21,13 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'users.apps.UsersConfig',
-    'recipes.apps.RecipesConfig',
     'api.apps.ApiConfig',
-    'djoser',
+    'recipes.apps.RecipesConfig',
+    'users.apps.UsersConfig',
     'rest_framework',
     'rest_framework.authtoken',
-    'django_filters'
+    'djoser',
+    'django_filters',
 ]
 
 MIDDLEWARE = [
