@@ -459,7 +459,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
             'ingredient__name',
             'ingredient__measurement_unit'
         ).order_by('ingredient__name').annotate(total=Sum('amount'))
-        result = settings.SHOPPIHG_LIST
+        result = settings.SHOPPING_LIST
         result += '\n'.join([
             f'{ingredient["ingredient__name"]} - {ingredient["total"]}/'
             f'{ingredient["ingredient__measurement_unit"]}'
