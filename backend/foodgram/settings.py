@@ -12,7 +12,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', default='localhost').split()
 
-# AUTH_USER_MODEL = 'users.User'
+AUTH_USER_MODEL = 'users.Follow'
 
 INSTALLED_APPS = [
     'django.contrib.admin',
