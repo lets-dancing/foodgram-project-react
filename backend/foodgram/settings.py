@@ -61,9 +61,8 @@ WSGI_APPLICATION = 'foodgram.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': os.getenv('DB_ENGINE', default='django.db.backends.sqlite3'),
-        'NAME': os.getenv('DB_NAME',
-                          default=os.path.join(BASE_DIR, 'db.sqlite3')),
+        'ENGINE': os.getenv('DB_ENGINE', default='django.db.backends.postgresql'),
+        'NAME': os.getenv('DB_NAME'),
         'USER': os.getenv('POSTGRES_USER'),
         'PASSWORD': os.getenv('POSTGRES_PASSWORD'),
         'HOST': os.getenv('DB_HOST'),
@@ -134,3 +133,7 @@ DJOSER = {
     },
     'HIDE_USERS': False
 }
+
+FILENAME = 'shopping_cart.txt'
+
+SHOPPING_LIST = 'Мой список покупок:\n\nНаименование - Кол-во/Ед.изм.\n'
