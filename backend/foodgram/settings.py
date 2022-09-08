@@ -12,6 +12,8 @@ DEBUG = True
 
 ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', default='localhost').split()
 
+ALLOWED_HOSTS = ['*']
+
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -134,3 +136,7 @@ DJOSER = {
     },
     'HIDE_USERS': False
 }
+
+FILENAME = 'shopping_cart.txt'
+
+SHOPPING_LIST = 'Мой список покупок:\n\nНаименование - Кол-во/Ед.изм.\n'

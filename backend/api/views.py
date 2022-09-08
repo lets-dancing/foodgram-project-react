@@ -310,23 +310,21 @@ from django.db.models import BooleanField, Exists, OuterRef, Sum, Value
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from djoser.views import UserViewSet
-
-from recipes.models import (
-    FavoriteRecipe, Ingredient, IngredientInRecipe, Recipe, ShoppingCart, Tag,
-)
+from recipes.models import (FavoriteRecipe, Ingredient, IngredientInRecipe,
+                            Recipe, ShoppingCart, Tag)
 from rest_framework import mixins, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import SAFE_METHODS, IsAuthenticated
 from rest_framework.response import Response
 from users.models import Follow
+
 from .filters import IngredientFilter, RecipeFilter
-from .permissions import IsAuthorOrAdminOrReadOnly, IsAdminOrReadOnly
-from .serializers import (
-    CheckFavoriteSerializer, CheckShoppingCartSerializer,
-    CheckSubscribeSerializer, FollowSerializer, IngredientSerializer,
-    RecipeAddingSerializer, RecipeReadSerializer, RecipeWriteSerializer,
-    TagSerializer,
-)
+from .permissions import IsAdminOrReadOnly, IsAuthorOrAdminOrReadOnly
+from .serializers import (CheckFavoriteSerializer, CheckShoppingCartSerializer,
+                          CheckSubscribeSerializer, FollowSerializer,
+                          IngredientSerializer, RecipeAddingSerializer,
+                          RecipeReadSerializer, RecipeWriteSerializer,
+                          TagSerializer)
 
 User = get_user_model()
 
@@ -459,7 +457,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
             'ingredient__name',
             'ingredient__measurement_unit'
         ).order_by('ingredient__name').annotate(total=Sum('amount'))
-        result = settings.SHOPPIHG_LIST
+        result = settings.SHOPPING_LIST
         result += '\n'.join([
             f'{ingredient["ingredient__name"]} - {ingredient["total"]}/'
             f'{ingredient["ingredient__measurement_unit"]}'
