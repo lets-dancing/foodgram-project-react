@@ -203,12 +203,12 @@
 #         if created:
 #             return ShoppingCart.objects.create(user=instance)
 
-from django.contrib.auth import get_user_model
+from django.conf import settings
 from django.core.validators import MinValueValidator
 from django.db import models
 from django.urls import reverse
 
-User = get_user_model()
+User = settings.AUTH_USER_MODEL
 
 
 class Tag(models.Model):
@@ -377,6 +377,39 @@ class FavoriteRecipe(models.Model):
 
     def __str__(self):
         return f'{self.user} - {self.recipe.name}'
+
+
+class Follow(models.Model):
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='follower',
+        verbose_name='Подписчик')
+    author = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='following',
+        verbose_name='Подписка')
+    created = models.DateTimeField(
+        'Дата подписки',
+        auto_now_add=True)
+
+    class Meta:
+        ordering = ['user']
+        verbose_name = 'Подписка'
+        verbose_name_plural = 'Подписки'
+        constraints = [
+            models.UniqueConstraint(
+                fields=['user', 'author'],
+                name='unique subs'),
+            models.CheckConstraint(
+                check=~models.Q(user=models.F('author')),
+                name='запрет подписки на самого себя',
+            ),
+        ]
+
+    def __str__(self):
+        return f'Пользователь: {self.user} - автор: {self.author}'
 
 
 class ShoppingCart(models.Model):

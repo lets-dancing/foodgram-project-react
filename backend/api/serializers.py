@@ -310,6 +310,7 @@
 #             'email', 'id', 'username', 'first_name', 'last_name',
 #             'is_subscribed', 'recipes', 'recipes_count',)
 
+from django.conf import settings
 #     def get_recipes(self, obj):
 #         request = self.context.get('request')
 #         limit = request.GET.get('recipes_limit')
@@ -319,18 +320,15 @@
 #         return SubscribeRecipeSerializer(
 #             recipes,
 #             many=True).data
-
 from django.contrib.auth import get_user_model
 from django.db.models import F
 from django.shortcuts import get_object_or_404
 from djoser.serializers import UserCreateSerializer, UserSerializer
 from drf_base64.fields import Base64ImageField
-from recipes.models import (
-    FavoriteRecipe, Ingredient, IngredientInRecipe, Recipe, ShoppingCart, Tag,
-)
+from recipes.models import (FavoriteRecipe, Follow, Ingredient,
+                            IngredientInRecipe, Recipe, ShoppingCart, Tag)
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
-from users.models import Follow
 
 User = get_user_model()
 

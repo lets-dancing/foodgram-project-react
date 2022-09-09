@@ -15,9 +15,8 @@
 
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
-from django.contrib.auth.models import User
 
-from .models import Follow
+from .models import User
 
 
 class CustomUserAdmin(UserAdmin):
@@ -25,7 +24,7 @@ class CustomUserAdmin(UserAdmin):
     list_filter = ('email', 'username')
 
 
-@admin.register(Follow)
+@admin.register(User)
 class FollowAdmin(admin.ModelAdmin):
     list_display = ('id', 'user', 'author')
     search_fields = ('user', 'author')
