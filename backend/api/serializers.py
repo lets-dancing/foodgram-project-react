@@ -490,32 +490,32 @@ class RecipeAddingSerializer(serializers.ModelSerializer):
         read_only_fields = ('id', 'name', 'image', 'cooking_time')
 
 
-class FollowSerializer(GetIsSubscribedMixin, serializers.ModelSerializer):
-    """Подписка"""
-    id = serializers.ReadOnlyField(source='author.id')
-    email = serializers.ReadOnlyField(source='author.email')
-    username = serializers.ReadOnlyField(source='author.username')
-    first_name = serializers.ReadOnlyField(source='author.first_name')
-    last_name = serializers.ReadOnlyField(source='author.last_name')
-    is_subscribed = serializers.SerializerMethodField()
-    recipes = serializers.SerializerMethodField()
-    recipes_count = serializers.SerializerMethodField()
+# class FollowSerializer(GetIsSubscribedMixin, serializers.ModelSerializer):
+#     """Подписка"""
+#     id = serializers.ReadOnlyField(source='author.id')
+#     email = serializers.ReadOnlyField(source='author.email')
+#     username = serializers.ReadOnlyField(source='author.username')
+#     first_name = serializers.ReadOnlyField(source='author.first_name')
+#     last_name = serializers.ReadOnlyField(source='author.last_name')
+#     is_subscribed = serializers.SerializerMethodField()
+#     recipes = serializers.SerializerMethodField()
+#     recipes_count = serializers.SerializerMethodField()
 
-    class Meta:
-        model = Follow
-        fields = ('id', 'email', 'username', 'first_name', 'last_name',
-                  'is_subscribed', 'recipes', 'recipes_count')
+#     class Meta:
+#         model = Follow
+#         fields = ('id', 'email', 'username', 'first_name', 'last_name',
+#                   'is_subscribed', 'recipes', 'recipes_count')
 
-    def get_recipes(self, obj):
-        request = self.context.get('request')
-        limit = request.GET.get('recipes_limit')
-        queryset = obj.author.recipes.all()
-        if limit:
-            queryset = queryset[:int(limit)]
-        return RecipeAddingSerializer(queryset, many=True).data
+#     def get_recipes(self, obj):
+#         request = self.context.get('request')
+#         limit = request.GET.get('recipes_limit')
+#         queryset = obj.author.recipes.all()
+#         if limit:
+#             queryset = queryset[:int(limit)]
+#         return RecipeAddingSerializer(queryset, many=True).data
 
-    def get_recipes_count(self, obj):
-        return obj.author.recipes.all().count()
+#     def get_recipes_count(self, obj):
+#         return obj.author.recipes.all().count()
 
 
 class CheckSubscribeSerializer(serializers.ModelSerializer):
@@ -615,7 +615,7 @@ class SubscribeRecipeSerializer(serializers.ModelSerializer):
         fields = ('id', 'name', 'image', 'cooking_time')
 
 
-class SubscribeSerializer(serializers.ModelSerializer):
+class FollowSerializer(serializers.ModelSerializer):
     id = serializers.IntegerField(
         source='author.id')
     email = serializers.EmailField(
