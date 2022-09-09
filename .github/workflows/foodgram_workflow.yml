@@ -66,6 +66,7 @@ jobs:
             cd infra/
             sudo docker-compose stop
             sudo docker-compose rm web
+            sudo systemctl stop nginx
       - name: docker-compose up
         uses: appleboy/ssh-action@master
         with:
