@@ -1,51 +1,54 @@
-import django_filters as filters
 from django.core.exceptions import ValidationError
-from django_filters import AllValuesMultipleFilter
+from django_filters.fields import MultipleChoiceField
+from django_filters.rest_framework import CharFilter, FilterSet, filters
 from django_filters.widgets import BooleanWidget
+
 from recipes.models import Ingredient, Recipe
-from users.models import User
 
 
-class TagsMultipleChoiceField(
-        filters.fields.MultipleChoiceField):
+class TagsMultipleChoiceField(MultipleChoiceField):
     def validate(self, value):
         if self.required and not value:
             raise ValidationError(
                 self.error_messages['required'],
-                code='required')
+                code='required'
+            )
         for val in value:
             if val in self.choices and not self.valid_value(val):
                 raise ValidationError(
                     self.error_messages['invalid_choice'],
                     code='invalid_choice',
-                    params={'value': val},)
+                    params={'value': val},
+                )
 
 
 class TagsFilter(filters.AllValuesMultipleFilter):
     field_class = TagsMultipleChoiceField
 
 
-class IngredientFilter(filters.FilterSet):
-    name = filters.CharFilter(lookup_expr='istartswith')
+class IngredientSearchFilter(FilterSet):
+    name = CharFilter(field_name='name', lookup_expr='icontains')
 
     class Meta:
         model = Ingredient
         fields = ('name',)
 
 
-class RecipeFilter(filters.FilterSet):
-    author = filters.ModelChoiceFilter(
-        queryset=User.objects.all())
+class RecipeFilter(FilterSet):
+    author = filters.AllValuesMultipleFilter(
+        field_name='author__id',
+        label='Автор'
+    )
     is_in_shopping_cart = filters.BooleanFilter(
         widget=BooleanWidget(),
-        label='В корзине.')
+        label='В корзине.'
+    )
     is_favorited = filters.BooleanFilter(
         widget=BooleanWidget(),
-        label='В избранных.')
-    tags = AllValuesMultipleFilter(
-        field_name='tags__slug',
-        label='Ссылка')
+        label='В избранных.'
+    )
+    tags = TagsFilter(field_name='tags__slug')
 
     class Meta:
         model = Recipe
-        fields = ['is_favorited', 'is_in_shopping_cart', 'author', 'tags']
+        fields = ['author', 'tags', 'is_in_shopping_cart', 'is_favorited']

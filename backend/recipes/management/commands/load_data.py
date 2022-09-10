@@ -10,7 +10,7 @@ class Command(BaseCommand):
     def handle(self, *args, **kwargs):
         print('Обработка файла ingredients.csv')
         with open(
-            './recipes/data/ingredients.csv',
+            './data/ingredients.csv',
             'r',
             encoding='utf-8'
         ) as file:
@@ -23,6 +23,8 @@ class Command(BaseCommand):
         data = [
             {'name': 'Завтрак', 'color': '#E26C2D', 'slug': 'breakfast'},
             {'name': 'Обед', 'color': '#49B64E', 'slug': 'lunch'},
-            {'name': 'Ужин', 'color': '#8775D2', 'slug': 'dinner'}]
+            {'name': 'Ужин', 'color': '#8775D2', 'slug': 'dinner'},
+            {'name': 'Дессерт', 'color': '#DB7093', 'slug': 'dessert'},
+            {'name': 'Закуски', 'color': '#FFD700', 'slug': 'snacks'}]
         Tag.objects.bulk_create(Tag(**tag) for tag in data)
         self.stdout.write(self.style.SUCCESS('Все тэги загружены!'))
