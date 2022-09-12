@@ -1,6 +1,7 @@
 # praktikum_new_diplom
 [![Django-app workflow](https://github.com/lets-dancing/foodgram-project-react/actions/workflows/foodgram_workflow.yml/badge.svg?branch=master)](https://github.com/lets-dancing/foodgram-project-react/actions/workflows/foodgram_workflow.yml)
 
+http://recipe.sytes.net/recipes
 
 ## Разворачивание проекта на сервере:
 
